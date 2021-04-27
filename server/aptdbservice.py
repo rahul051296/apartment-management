@@ -16,6 +16,7 @@ class AptDataService:
                       "pictureUrl": apartment.pictureUrl,
                       "street": apartment.street, "city": apartment.city, "state": apartment.state,
                       "zipcode": apartment.zipcode, "units_available": apartment.available_units}
+            print(cursor.description)
             response.append(values)
         cursor.close()
         del cursor
@@ -84,3 +85,23 @@ class AptDataService:
             cursor.close()
             del cursor
             return {'status': 'Query Failed', 'exception': str(exception)}
+
+    def get_booking_list(self):
+        cursor = self.db_connection.cursor()
+        booking_details = cursor.execute("SELECT * FROM getBookingDetails()").fetchall()
+        response = []
+        for booking in booking_details:
+            values = {"flatId": booking.flatId, "apartmentName": booking.apartmentName,
+                      "pictureUrl": booking.pictureUrl, "flatDescription": booking.flatDescription,
+                      "availability": booking.availabilty, "bathroomCount": booking.bathroomCount,
+                      "bedroomCount": booking.bedroomCount, "buildingSize": booking.buildingSize,
+                      "blockNumber": booking.blockNumber, "bookingDate": booking.bookingDate,
+                      "firstName": booking.firstName, "lastName": booking.lastName, "email": booking.email,
+                      "phoneNr": booking.phoneNr}
+            response.append(values)
+        cursor.close()
+        del cursor
+        return response
+
+
+

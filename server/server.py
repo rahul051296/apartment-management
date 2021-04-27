@@ -35,8 +35,13 @@ def get_flat_by_flatID(flatId):
 
 @app.route('/booking', methods=['POST'])
 def add_booking_data():
-    print(request.get_json())
     response = apt_data_service.add_resident_and_booking(request.get_json())
+    return json.dumps(response)
+
+
+@app.route('/booking-list', methods=['GET'])
+def get_booking_details():
+    response = apt_data_service.get_booking_list()
     return json.dumps(response)
 
 

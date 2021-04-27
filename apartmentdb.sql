@@ -111,7 +111,7 @@ GO
 CREATE TABLE HouseBooking
 (
 	houseBookingId int IDENTITY (1, 1) NOT NULL,
-	bookingDate datetime NOT NULL,
+	bookingDate datetime,
 	flatId int NOT NULL,
 	residentId int NOT NULL,
 	CONSTRAINT HouseBooking_PK PRIMARY KEY(houseBookingId)

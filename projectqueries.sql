@@ -43,6 +43,7 @@ BEGIN TRY
 	DECLARE @ResidentID int;
 	SET @ResidentID = (SELECT residentID FROM Resident WHERE email = @Email)
 	INSERT INTO HouseBooking(flatId, residentId) VALUES (@FlatId, @ResidentID)
+	UPDATE Flat SET availabilty = 0 WHERE flatId = @FlatId 
 END TRY
 BEGIN CATCH
 	SELECT  
@@ -66,11 +67,28 @@ IF(@BookingDate IS NULL)
 	UPDATE HouseBooking SET bookingDate = @BookingDate WHERE houseBookingId = (SELECT houseBookingId FROM inserted)
 GO
 
+IF OBJECT_ID('getBookingDetails') IS NOT NULL
+DROP FUNCTION getBookingDetails
+GO
+
+CREATE FUNCTION getBookingDetails()
+RETURNS TABLE
+RETURN(
+	SELECT fl.*, hb.houseBookingId, hb.bookingDate, rs.residentId, rs.email, rs.firstName, rs.lastName, rs.phoneNr from Flat as fl 
+	JOIN HouseBooking as hb
+	ON fl.flatId = hb.flatId
+	JOIN Resident as rs ON hb.residentId = rs.residentId
+)
+GO
+
+SELECT * FROM getBookingDetails()
+
 SELECT * FROM Resident;
 
 SELECT * FROM HouseBooking;
 
-SELECT * FROM Flat Where flatId =1 
+SELECT * FROM FLAT WHERE flatId=1
 
-
-
+TRUNCATE TABLE Resident
+DELETE FROM Resident
+DBCC CHECKIDENT ('Resident',RESEED, 0)

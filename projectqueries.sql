@@ -74,12 +74,15 @@ GO
 CREATE FUNCTION getBookingDetails()
 RETURNS TABLE
 RETURN(
-	SELECT fl.*, hb.houseBookingId, hb.bookingDate, rs.residentId, rs.email, rs.firstName, rs.lastName, rs.phoneNr from Flat as fl 
+	SELECT fl.*, ap.apartmentName, hb.houseBookingId, hb.bookingDate, rs.residentId, rs.email, rs.firstName, rs.lastName, rs.phoneNr from Flat as fl 
 	JOIN HouseBooking as hb
 	ON fl.flatId = hb.flatId
 	JOIN Resident as rs ON hb.residentId = rs.residentId
+	JOIN Apartment as ap ON fl.apartmentId = ap.apartmentId 
 )
 GO
+
+
 
 SELECT * FROM getBookingDetails()
 
@@ -87,7 +90,39 @@ SELECT * FROM Resident;
 
 SELECT * FROM HouseBooking;
 
+GO
+CREATE PROC insertMaintanenceDetails @Description varchar(500), @FlatId int, @ResidentId int
+AS
+BEGIN
+	DECLARE @EmployeeId int;
+	SET @EmployeeId = (SELECT TOP 1 employeeId FROM Employee ORDER BY NEWID())
+	INSERT INTO Maintenance(description, employeeId, flatId, residentId) VALUES(@Description, @EmployeeId, @FlatId, @ResidentId) 
+END
+GO
+
+CREATE TRIGGER Maintenance_INSERT
+ON Maintenance 
+AFTER INSERT 
+AS
+DECLARE @MaintenanceDate DATETIME
+SET @MaintenanceDate = (SELECT maintanenceDate FROM inserted)
+IF(@MaintenanceDate IS NULL)
+	SET @MaintenanceDate = GETDATE()
+	UPDATE Maintenance SET maintanenceDate = @MaintenanceDate WHERE maintenanceId = (SELECT maintenanceId FROM inserted)
+GO
+
+EXEC insertMaintanenceDetails @Description='Test', @FlatId=2, @ResidentId=1
+
+ALTER TABLE Maintenance ALTER COLUMN maintanenceDate datetime NULL;
+SELECT * FROM Employee;
+SELECT * FROM Maintenance;
 SELECT * FROM FLAT WHERE flatId=1
+
+
+
+
+SELECT TOP 1 employeeId FROM Employee
+ORDER BY NEWID()
 
 TRUNCATE TABLE Resident
 DELETE FROM Resident

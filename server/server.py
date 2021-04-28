@@ -39,9 +39,21 @@ def add_booking_data():
     return json.dumps(response)
 
 
+@app.route('/maintenance', methods=['POST'])
+def add_maintenance_data():
+    response = apt_data_service.add_maintenance_request(request.get_json())
+    return json.dumps(response)
+
+
 @app.route('/booking-list', methods=['GET'])
 def get_booking_details():
     response = apt_data_service.get_booking_list()
+    return json.dumps(response)
+
+
+@app.route('/maintenance-list', methods=['GET'])
+def get_maintenance_list():
+    response = apt_data_service.get_maintenance_list()
     return json.dumps(response)
 
 

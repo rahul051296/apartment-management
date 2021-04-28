@@ -133,13 +133,15 @@ CREATE TABLE Employee
 GO
 
 
+
+
 CREATE TABLE Maintenance
 (
 	maintenanceId int IDENTITY (1, 1) NOT NULL,
 	description varchar(4000) NOT NULL,
 	employeeId int NOT NULL,
 	flatId int NOT NULL,
-	maintanenceDate datetime NOT NULL,
+	maintanenceDate datetime,
 	residentId int NOT NULL,
 	CONSTRAINT Maintenance_PK PRIMARY KEY(maintenanceId)
 )

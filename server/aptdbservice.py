@@ -96,12 +96,46 @@ class AptDataService:
                       "availability": booking.availabilty, "bathroomCount": booking.bathroomCount,
                       "bedroomCount": booking.bedroomCount, "buildingSize": booking.buildingSize,
                       "blockNumber": booking.blockNumber, "bookingDate": booking.bookingDate,
-                      "firstName": booking.firstName, "lastName": booking.lastName, "email": booking.email,
+                      "residentId": booking.residentId, "firstName": booking.firstName,
+                      "lastName": booking.lastName, "email": booking.email,
                       "phoneNr": booking.phoneNr}
             response.append(values)
         cursor.close()
         del cursor
         return response
 
+    def add_maintenance_request(self, data):
+        cursor = self.db_connection.cursor()
+        try:
+            storedProc = "EXEC insertMaintanenceDetails @Description= ? , @FlatId= ? , @ResidentId= ?"
+            params = (data.get('description'), data.get('flatId'), data.get('residentId'))
+            cursor.execute(storedProc, params)
+            cursor.commit()
+            cursor.close()
+            del cursor
+            return {'status': 'Executed successfully'}
+        except Exception as exception:
+            print("Exception: {}".format(type(exception).__name__))
+            print("Exception message: {}".format(exception))
+            cursor.close()
+            del cursor
+            return {'status': 'Query Failed', 'exception': str(exception)}
 
+    def get_maintenance_list(self):
+        cursor = self.db_connection.cursor()
+        maintenance_list = cursor.execute("SELECT * FROM getMaintenanceList()").fetchall()
+        response = []
+        for maintenance_detail in maintenance_list:
+            values = {"apartmentName": maintenance_detail.apartmentName,
+                      "maintenanceId": maintenance_detail.maintenanceId,
+                      "description": maintenance_detail.description,
+                      "maintenanceDate": maintenance_detail.maintanenceDate,
+                      "employeeName": maintenance_detail.employeeName,
+                      "employeeEmail": maintenance_detail.employeeEmail,
+                      "employeePhoneNr": maintenance_detail.employeePhoneNr, "flatNo": maintenance_detail.flatNo,
+                      "residentName": maintenance_detail.residentName}
+            response.append(values)
+        cursor.close()
+        del cursor
+        return response
 
